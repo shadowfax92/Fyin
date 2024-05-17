@@ -10,12 +10,10 @@ mod args;
 mod bing;
 mod data;
 mod embedding;
-mod errors;
 mod llm;
-mod open_ai;
+mod pretty_print;
 mod scraper;
 mod vector;
-mod pretty_print;
 
 use anyhow::Result;
 use clap::Parser;
@@ -47,8 +45,6 @@ async fn init() -> Result<()> {
             var_name
         );
     }
-
-    open_ai::setup().unwrap();
 
     pretty_env_logger::init();
 

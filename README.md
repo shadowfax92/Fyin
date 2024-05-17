@@ -10,6 +10,8 @@
 
 ## Demo
 
+[![Demo](https://youtu.be/gIjgus8jgko)](https://youtu.be/gIjgus8jgko)
+
 ## Installation
 
 1. Clone the repository - `git clone https://github.com/shadowfax92/fyin.app`

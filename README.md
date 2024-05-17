@@ -10,7 +10,7 @@
 
 ## Demo
 
-[![Demo](https://youtu.be/gIjgus8jgko)](https://youtu.be/gIjgus8jgko)
+[![Demo](https://github.com/shadowfax92/fyin.app/blob/a08e723d7622ab0115769443e8c055ba50ff06db/public/thumbnail.png)](https://youtu.be/gIjgus8jgko)
 
 ## Installation
 

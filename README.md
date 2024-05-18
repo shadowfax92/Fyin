@@ -1,8 +1,8 @@
 # fyin
-> Open source alternative to Perplexity AI with ability to run locally (except search).
+> Open source alternative to Perplexity AI with ability to run locally. 
 
 ## Motivation
-Perplexity AI is a great tool but it is not possible to run it locally and lacks customisations. This project is an attempt to build a similar tool that can be run locally, open source and faster than perplexity in bringing answers.
+This project aims to build a tool that can be run locally, is open-source, and delivers faster answers, serving as an alternative to Perplexity AI.
 
 ## Features
 - [x] Run locally using ollama or use openai API
@@ -15,7 +15,8 @@ Perplexity AI is a great tool but it is not possible to run it locally and lacks
 
 ## Demo
 
-[![Demo](https://github.com/shadowfax92/fyin.app/blob/a08e723d7622ab0115769443e8c055ba50ff06db/public/thumbnail.png)](https://youtu.be/gIjgus8jgko)
+[![Youtube Demo - Running locally with OpenAI gpt-4o](https://img.youtube.com/vi/9tVGcPokgdo/0.jpg)](https://www.youtube.com/watch?v=9tVGcPokgdo)
+
 
 ---
 

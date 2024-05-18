@@ -1,7 +1,8 @@
 use crate::data::Request;
 use crate::llm;
-
+use crate::pretty_print;
 use crate::vector::VectorDB;
+
 use anyhow::Result;
 use futures::stream::{FuturesUnordered, StreamExt};
 
@@ -49,6 +50,7 @@ pub async fn generate_upsert_embeddings(
             chunks.len(),
             result.url
         );
+        pretty_print::print_yellow(&format!("Generating embedding for url: {}", result.url));
 
         // parallely process chunks and store it
         for chunk in chunks.into_iter() {
@@ -59,7 +61,6 @@ pub async fn generate_upsert_embeddings(
             tasks.push(tokio::spawn(async move {
                 let llm_agent = llm::LlmAgent::init().await;
                 let embedding = llm_agent.embed_string(&chunk).await.unwrap();
-
 
                 // increment the counter
                 let map_index = {

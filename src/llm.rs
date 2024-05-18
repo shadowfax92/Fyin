@@ -1,9 +1,9 @@
 use crate::data::Chunk;
-use owo_colors::OwoColorize;
 use crate::pretty_print;
 use anyhow::Result;
 use langchain_rust::embedding::{Embedder, FastEmbed};
 use langchain_rust::llm::OpenAIConfig;
+use owo_colors::OwoColorize;
 
 use futures_util::StreamExt;
 use langchain_rust::embedding::openai::OpenAiEmbedder;
@@ -41,9 +41,9 @@ lazy_static! {
 fn print_message_once(local_mode: bool) {
     if !PRINTED.swap(true, Ordering::SeqCst) {
         if local_mode {
-            pretty_print::print_green("Running in local mode using ollama");
+            pretty_print::print_yellow("Running in local mode using ollama");
         } else {
-            pretty_print::print_green("Running using openai");
+            pretty_print::print_yellow("Running using openai");
         }
     }
 }
@@ -92,7 +92,6 @@ impl LlmAgent {
                 use_fast_embed: false,
             }
         }
-
     }
 
     pub async fn embed_string(&self, prompt: &str) -> Result<Vec<f64>> {

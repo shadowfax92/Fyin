@@ -45,11 +45,10 @@ pub async fn fetch_web_pages(request: Arc<Mutex<Request>>, search_count: usize) 
         let json: Value = response.json().await?;
         let mut request = request.lock().unwrap();
 
-        pretty_print::print_green(
-            &format!(
+        pretty_print::print_yellow(&format!(
             "Bing search returned: {} results",
-            json["webPages"]["value"].as_array().unwrap().len())
-        );
+            json["webPages"]["value"].as_array().unwrap().len()
+        ));
 
         json["webPages"]["value"]
             .as_array()
@@ -62,7 +61,10 @@ pub async fn fetch_web_pages(request: Arc<Mutex<Request>>, search_count: usize) 
                     content: None,
                 })
             });
-        log::debug!("JSON result from bing: {}", serde_json::to_string_pretty(&json)?);
+        log::debug!(
+            "JSON result from bing: {}",
+            serde_json::to_string_pretty(&json)?
+        );
         Ok(())
     } else {
         Err(anyhow!(

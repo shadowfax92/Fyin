@@ -75,8 +75,8 @@ async fn prompt(prompt: &str, search_count: usize) -> Result<()> {
     ));
 
     // fetch search results
-    bing::fetch_web_pages(request.clone(), search_count).await?;
     pretty_print::print_blue("Fetching search results from bing...");
+    bing::fetch_web_pages(request.clone(), search_count).await?;
 
     // scrape content
     pretty_print::print_blue("Scraping content from search results...");

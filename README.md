@@ -32,22 +32,38 @@ This project aims to build a tool that can be run locally, is open-source, and d
 
 ### Environment Variables
 ```
-# Open AI config
-OPENAI_KEY = "<OPENAI_API_KEY>"
-OPENAI_BASE_URL = "" # Leave blank for default
-BING_SUBSCRIPTION_KEY = "<BING_SUBSCRIPTION_KEY>"
-BING_ENDPOINT = "" # Leave blank for default
-EMBEDDING_MODEL_NAME = "text-embedding-ada-002"
-CHAT_MODEL_NAME = "gpt-4o"
+# Open AI config; Ollama config in comments
 
-# Ollama config
-# OPENAI_KEY = "ollama"
-# OPENAI_BASE_URL = "http://localhost:11434/v1"
-# BING_SUBSCRIPTION_KEY = "<BING_SUBSCRIPTION_KEY>"
-# BING_ENDPOINT = ""
-# EMBEDDING_MODEL_NAME = "llama3"
-# CHAT_MODEL_NAME = "llama3"
+# OPENAI_API_KEY="ollama"
+OPENAI_API_KEY="your-openai-api-key"
+
+# OPENAI_BASE_URL=http://localhost:11434/v1
+# Leave blank for default
+OPENAI_BASE_URL=
+
+BING_SUBSCRIPTION_KEY="your-bing-subscription-key"
+# Leave blank for default
+BING_ENDPOINT=
+
+# EMBEDDING_MODEL_NAME="llama3"
+EMBEDDING_MODEL_NAME="text-embedding-ada-002"
+
+# CHAT_MODEL_NAME="llama3"
+CHAT_MODEL_NAME="gpt-4o"
 ```
+
+### Docker
+Here is how you can run the app using docker:
+1. Build the docker image - `docker build -t fyin .`
+2. Create environment file - `cp sample.env .env` and populate the values
+3. Run the docker container 
+
+`docker run --rm --env-file .env fyin --query "<your question>" --search <optional: number of search results to parse>`
+
+## Notes
+- The app use Bing API for searching. You can get from [Active Bing API](https://www.microsoft.com/en-us/bing/apis/bing-web-search-api).
+- You can get OpenAI API key form [OpenAI](https://openai.com/api/).
+- [Ollama](https://www.ollama.com/) setup instructions here.
 
 ---
 

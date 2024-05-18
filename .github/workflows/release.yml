@@ -24,12 +24,33 @@ jobs:
           target: ${{ matrix.target }}
           default: true
 
-      - name: Install dependencies
+      - name: Install dependencies for Windows
         if: matrix.target == 'x86_64-pc-windows-gnu'
         run: sudo apt-get install -y mingw-w64
 
+      - name: Install dependencies for macOS
+        if: matrix.target == 'x86_64-apple-darwin'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang
+          git clone https://github.com/tpoechtrager/osxcross.git
+          cd osxcross
+          wget https://github.com/tpoechtrager/osxcross/raw/master/tarballs/MacOSX10.11.sdk.tar.xz
+          mv MacOSX10.11.sdk.tar.xz tarballs/
+          UNATTENDED=yes OSX_VERSION_MIN=10.11 ./build.sh
+          sudo mkdir -p /opt/osxcross
+          sudo mv target /opt/osxcross
+          echo 'export PATH="/opt/osxcross/target/bin:$PATH"' >> $GITHUB_ENV
+          echo 'export SDKROOT=/opt/osxcross/target/SDK/MacOSX10.11.sdk' >> $GITHUB_ENV
+          echo 'export MACOSX_DEPLOYMENT_TARGET=10.11' >> $GITHUB_ENV
+
       - name: Build
-        run: cargo build --release --target ${{ matrix.target }}
+        run: |
+          if [ "${{ matrix.target }}" = "x86_64-apple-darwin" ]; then
+            export CC=o64-clang
+            export CXX=o64-clang++
+          fi
+          cargo build --release --target ${{ matrix.target }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3

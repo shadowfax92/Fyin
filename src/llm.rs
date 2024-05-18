@@ -61,7 +61,7 @@ impl LlmAgent {
             false
         };
 
-        let key = env::var("OPENAI_KEY").unwrap();
+        let key = env::var("OPENAI_API_KEY").unwrap();
 
         print_message_once(local_mode);
 

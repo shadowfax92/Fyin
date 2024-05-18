@@ -1,6 +1,6 @@
 use clap::Parser;
 
-/// fyin.ai - CLI Perplexity alternative
+/// fyin.app - Open source CLI alternative to Perplexity AI.
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 pub struct Args {

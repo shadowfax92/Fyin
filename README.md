@@ -17,6 +17,7 @@ This project aims to build a tool that can be run locally, is open-source, and d
 
 [![Youtube Demo - Running locally with OpenAI gpt-4o](https://github.com/shadowfax92/fyin-website/blob/78f9785d4905151ac1faafc6ab4bc15076bbdcf0/public/demo.gif)](https://www.youtube.com/watch?v=9tVGcPokgdo)
 
+(You can watch the demo on YouTube too [here](https://www.youtube.com/watch?v=9tVGcPokgdo))
 
 ---
 

@@ -7,9 +7,9 @@ This project aims to build a tool that can be run locally, is open-source, and d
 ## Features
 - [x] Run locally using ollama or use openai API
 - [x] local VectorDB for fast search
-- [x] very quick searching, scrapping & answering due to parallelism 
+- [x] very quick searching, scraping & answering due to parallelism 
 - [x] Configurable number of search results to parse
-- [x] local scrapping of websites
+- [x] local scraping of websites
 
 ---
 

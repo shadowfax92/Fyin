@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::env;
 use std::sync::{Arc, Mutex};
 
-const DEFAULT_BING_ENDPOINT: &str = "https://api.bing.microsoft.com/v7.0/search";
+const DEFAULT_BING_ENDPOINT: &str = "https://localhost:3000/search";
 
 pub async fn fetch_web_pages(request: Arc<Mutex<Request>>, search_count: usize) -> Result<()> {
     // Construct a request
@@ -16,7 +16,7 @@ pub async fn fetch_web_pages(request: Arc<Mutex<Request>>, search_count: usize) 
     let count_str = search_count.to_string();
 
     let mut params = HashMap::new();
-    params.insert("mkt", mkt);
+    params.insert("format", "json");
     params.insert("q", &query);
     params.insert("count", &count_str);
 
@@ -36,7 +36,7 @@ pub async fn fetch_web_pages(request: Arc<Mutex<Request>>, search_count: usize) 
     let client = reqwest::Client::new();
     let response = client
         .get(bing_endpoint)
-        .headers(headers)
+        //.headers(headers)
         .query(&params)
         .send()
         .await?;
@@ -46,17 +46,17 @@ pub async fn fetch_web_pages(request: Arc<Mutex<Request>>, search_count: usize) 
         let mut request = request.lock().unwrap();
 
         pretty_print::print_yellow(&format!(
-            "Bing search returned: {} results",
-            json["webPages"]["value"].as_array().unwrap().len()
+            "Search returned: {} results",
+            json["number_of_results"].as_array().unwrap().len()
         ));
 
-        json["webPages"]["value"]
+        json["results"]
             .as_array()
             .unwrap()
             .iter()
             .for_each(|wp| {
                 request.add_search_result(SearchResult {
-                    name: wp["name"].as_str().unwrap().to_string(),
+                    name: wp["title"].as_str().unwrap().to_string(),
                     url: wp["url"].as_str().unwrap().to_string(),
                     content: None,
                 })

@@ -6,13 +6,13 @@ use serde_json::Value;
 use std::collections::HashMap;
 use std::env;
 use std::sync::{Arc, Mutex};
-
+// Change to Searxng
 const DEFAULT_BING_ENDPOINT: &str = "https://localhost:3000/search";
 
 pub async fn fetch_web_pages(request: Arc<Mutex<Request>>, search_count: usize) -> Result<()> {
     // Construct a request
     let query = request.lock().unwrap().query.clone();
-    let mkt = "en-US";
+    let lang = "en-US";
     let count_str = search_count.to_string();
 
     let mut params = HashMap::new();

@@ -27,16 +27,13 @@ pub async fn fetch_web_pages(request: Arc<Mutex<Request>>, search_count: usize) 
     let bing_api_key = env::var("BING_SUBSCRIPTION_KEY").unwrap();
 
     let mut headers = HeaderMap::new();
-    headers.insert(
-        "Ocp-Apim-Subscription-Key",
-        HeaderValue::from_str(&bing_api_key)?,
-    );
-
+    headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
+    
     // Call the API
     let client = reqwest::Client::new();
     let response = client
         .get(bing_endpoint)
-        //.headers(headers)
+        .headers(headers)
         .query(&params)
         .send()
         .await?;

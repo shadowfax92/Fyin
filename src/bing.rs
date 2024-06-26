@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::env;
 use std::sync::{Arc, Mutex};
 // Change to Searxng
-const DEFAULT_BING_ENDPOINT: &str = "https://localhost:3000/search";
+const DEFAULT_BING_ENDPOINT: &str = "http://localhost:3000/search";
 
 pub async fn fetch_web_pages(request: Arc<Mutex<Request>>, search_count: usize) -> Result<()> {
     // Construct a request

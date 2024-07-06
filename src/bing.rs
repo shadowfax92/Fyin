@@ -6,17 +6,17 @@ use serde_json::Value;
 use std::collections::HashMap;
 use std::env;
 use std::sync::{Arc, Mutex};
-
-const DEFAULT_BING_ENDPOINT: &str = "https://api.bing.microsoft.com/v7.0/search";
+// Change to Searxng 
+const DEFAULT_BING_ENDPOINT: &str = "http://searxng:3000/search";
 
 pub async fn fetch_web_pages(request: Arc<Mutex<Request>>, search_count: usize) -> Result<()> {
     // Construct a request
     let query = request.lock().unwrap().query.clone();
-    let mkt = "en-US";
+    let lang = "en-US";
     let count_str = search_count.to_string();
 
     let mut params = HashMap::new();
-    params.insert("mkt", mkt);
+    params.insert("format", "json");
     params.insert("q", &query);
     params.insert("count", &count_str);
 
@@ -27,11 +27,8 @@ pub async fn fetch_web_pages(request: Arc<Mutex<Request>>, search_count: usize) 
     let bing_api_key = env::var("BING_SUBSCRIPTION_KEY").unwrap();
 
     let mut headers = HeaderMap::new();
-    headers.insert(
-        "Ocp-Apim-Subscription-Key",
-        HeaderValue::from_str(&bing_api_key)?,
-    );
-
+    headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
+    
     // Call the API
     let client = reqwest::Client::new();
     let response = client
@@ -46,17 +43,17 @@ pub async fn fetch_web_pages(request: Arc<Mutex<Request>>, search_count: usize) 
         let mut request = request.lock().unwrap();
 
         pretty_print::print_yellow(&format!(
-            "Bing search returned: {} results",
-            json["webPages"]["value"].as_array().unwrap().len()
+            "Search returned: {} results",
+            json["number_of_results"].as_array().unwrap().len()
         ));
 
-        json["webPages"]["value"]
+        json["results"]
             .as_array()
             .unwrap()
             .iter()
             .for_each(|wp| {
                 request.add_search_result(SearchResult {
-                    name: wp["name"].as_str().unwrap().to_string(),
+                    name: wp["title"].as_str().unwrap().to_string(),
                     url: wp["url"].as_str().unwrap().to_string(),
                     content: None,
                 })

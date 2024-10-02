@@ -29,5 +29,9 @@ regex = "1.10.4"
 ollama-rs = { version = "0.1.9", features = ["stream"] }
 owo-colors = "4.0.0"
 lazy_static = "1.4.0"
+shuttle-runtime = "0.45.0"
+shuttle-axum = "0.45.0"
+axum-streams = "0.14.2"
+axum = "0.7.5"
 
 

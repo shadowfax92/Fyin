@@ -17,9 +17,14 @@ use langchain_rust::{
     schemas::Message,
 };
 
+use futures_util::Stream;
 use ollama_rs::{generation::completion::request::GenerationRequest, Ollama};
 use std::env;
 use std::io::{stdout, Write};
+use std::pin::Pin;
+use tokio::sync::mpsc;
+use tokio_stream::wrappers::ReceiverStream;
+use tokio_stream::wrappers::UnboundedReceiverStream;
 
 const DEFAULT_OPENAI_BASE_URL: &str = "https://api.openai.com/v1";
 
@@ -138,32 +143,43 @@ impl LlmAgent {
         }
         Ok(documents)
     }
-    pub async fn answer_question_stream(&self, query: &str, chunks: &Vec<Chunk>) -> Result<()> {
-        pretty_print::print_blue(&format!("\nAnswering your query: {} 🙋\n", query));
+
+    pub async fn answer_question_stream(
+        &self,
+        query: &str,
+        chunks: &Vec<Chunk>,
+    ) -> Result<Pin<Box<dyn Stream<Item = Result<String, anyhow::Error>> + Send>>> {
         if self.local_mode {
-            self.answer_using_ollama(query, chunks).await?;
+            Ok(Box::pin(self.answer_using_ollama(query, chunks).await?))
         } else {
-            self.answer_using_openai(query, chunks).await?;
+            Ok(Box::pin(self.answer_using_openai(query, chunks).await?))
         }
-        Ok(())
     }
 
-    async fn answer_using_ollama(&self, query: &str, chunks: &Vec<Chunk>) -> Result<()> {
+    async fn answer_using_ollama(
+        &self,
+        query: &str,
+        chunks: &Vec<Chunk>,
+    ) -> Result<impl Stream<Item = Result<String, anyhow::Error>> + Send> {
         let documents = Self::chunk_to_documents(chunks)?;
-        let prompt = format!("
-                        SOURCES:
-                        {sources}
+        let prompt = format!(
+            "
+            SOURCES:
+            {sources}
 
-                        QUESTION:
-                        {question}
+            QUESTION:
+            {question}
 
-                        INSTRUCTIONS:
-                        You are a helpful AI assistant that helps users answer questions using the provided sources. If answer is not in sources, say you don't know rather than making up an answer.
+            INSTRUCTIONS:
+            You are a helpful AI assistant that helps users answer questions using the provided sources. If answer is not in sources, say you don't know rather than making up an answer.
 
-                        Please provide a detailed answer to the question above only using the sources provided.
-                        Include in-text citations like this [1] for each significant fact or statement at the end of the sentence.
-                        At the end of your response, list all sources in a citation section with the format: [citation number] Name - URL.
-                    ", sources = documents.join("\n"), question = query);
+            Please provide a detailed answer to the question above only using the sources provided.
+            Include in-text citations like this [1] for each significant fact or statement at the end of the sentence.
+            At the end of your response, list all sources in a citation section with the format: [citation number] Name - URL.
+        ",
+            sources = documents.join("\n"),
+            question = query
+        );
 
         let mut stream = self
             .ollama
@@ -173,17 +189,24 @@ impl LlmAgent {
             .await
             .unwrap();
 
-        while let Some(res) = stream.next().await {
-            let responses = res.unwrap();
-            for resp in responses {
-                print!("{}", resp.response.as_str().green());
-                stdout().flush().unwrap();
+        let (tx, rx) = mpsc::unbounded_channel();
+        tokio::spawn(async move {
+            while let Some(res) = stream.next().await {
+                let responses = res.unwrap();
+                for resp in responses {
+                    let _ = tx.send(Ok(resp.response.as_str().green().to_string()));
+                }
             }
-        }
-        Ok(())
+        });
+
+        Ok(UnboundedReceiverStream::new(rx))
     }
 
-    async fn answer_using_openai(&self, query: &str, chunks: &Vec<Chunk>) -> Result<()> {
+    async fn answer_using_openai(
+        &self,
+        query: &str,
+        chunks: &Vec<Chunk>,
+    ) -> Result<impl Stream<Item = Result<String, anyhow::Error>> + Send> {
         let documents = Self::chunk_to_documents(chunks)?;
         let llm = OpenAI::default().with_model(OpenAIModel::Gpt35);
         let memory = SimpleMemory::new();
@@ -193,7 +216,8 @@ impl LlmAgent {
             .prompt(message_formatter![
                 fmt_message!(Message::new_system_message("You are a helpful AI assistant that helps users answer questions using the provided sources. If answer is not in sources, say you don't know rather than making up an answer.")),
                 fmt_message!(Message::new_system_message(
-                    format!("
+                    format!(
+                        "
                         SOURCES:
                         {sources}
 
@@ -204,32 +228,36 @@ impl LlmAgent {
                         Please provide a detailed answer to the question above only using the sources provided.
                         Include in-text citations like this [1] for each significant fact or statement at the end of the sentence.
                         At the end of your response, list all sources in a citation section with the format: [citation number] Name - URL.
-                    ", sources = documents.join("\n"), question = query)
+                    ",
+                        sources = documents.join("\n"),
+                        question = query
+                    )
                 ))
             ])
             .memory(memory.into())
             .build()
             .expect("Error building ConversationalChain");
 
-        // TODO: it crashes when input varible is not passed, seems like a bug in crate
         let input_variables = prompt_args! {
             "input" => "",
         };
 
         let mut stream = chain.stream(input_variables).await.unwrap();
-        while let Some(result) = stream.next().await {
-            match result {
-                Ok(data) => {
-                    //If you just want to print to stdout, you can use data.to_stdout().unwrap();
-                    print!("{}", data.content.green());
-                    stdout().flush().unwrap();
-                }
-                Err(e) => {
-                    println!("Error: {:?}", e);
+
+        let (tx, rx) = mpsc::unbounded_channel();
+        tokio::spawn(async move {
+            while let Some(result) = stream.next().await {
+                match result {
+                    Ok(data) => {
+                        let _ = tx.send(Ok(data.content.green().to_string()));
+                    }
+                    Err(e) => {
+                        let _ = tx.send(Err(anyhow::anyhow!(e)));
+                    }
                 }
             }
-        }
+        });
 
-        Ok(())
+        Ok(UnboundedReceiverStream::new(rx))
     }
 }

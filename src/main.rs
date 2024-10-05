@@ -1,4 +1,3 @@
-// #![allow(unused_variables)]
 #![allow(dead_code)]
 // #![allow(unused_imports)]
 // #![allow(deprecated)]
@@ -34,6 +33,7 @@ async fn init() -> Result<()> {
         "BING_SUBSCRIPTION_KEY",
         "EMBEDDING_MODEL_NAME",
         "CHAT_MODEL_NAME",
+        "OPENROUTER_API_KEY",
     ];
 
     for &var_name in &env_vars {

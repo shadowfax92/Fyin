@@ -29,5 +29,4 @@ regex = "1.10.4"
 ollama-rs = { version = "0.1.9", features = ["stream"] }
 owo-colors = "4.0.0"
 lazy_static = "1.4.0"
-
-
+openrouter = "0.1.0"

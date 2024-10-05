@@ -1,19 +1,16 @@
-// #![allow(unused_variables)]
 #![allow(dead_code)]
-// #![allow(unused_imports)]
-// #![allow(deprecated)]
 
 #[macro_use]
 extern crate lazy_static;
 
 mod args;
-mod bing;
 mod data;
 mod embedding;
 mod llm;
 mod pretty_print;
 mod scraper;
 mod vector;
+mod search;
 
 use anyhow::Result;
 use clap::Parser;
@@ -76,7 +73,7 @@ async fn prompt(prompt: &str, search_count: usize) -> Result<()> {
 
     // fetch search results
     pretty_print::print_blue("Fetching search results from bing...");
-    bing::fetch_web_pages(request.clone(), search_count).await?;
+    search::fetch_web_pages(request.clone(), search_count).await?;
 
     // scrape content
     pretty_print::print_blue("Scraping content from search results...");

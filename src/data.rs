@@ -31,6 +31,19 @@ pub struct Chunk {
     pub url: String,
 }
 
+pub struct User {
+    pub id: i32,
+    pub username: String,
+    pub password_hash: String,
+}
+
+pub struct SearchHistory {
+    pub id: i32,
+    pub user_id: i32,
+    pub query: String,
+    pub timestamp: chrono::NaiveDateTime,
+}
+
 pub fn hash_string(input: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(input.as_bytes());

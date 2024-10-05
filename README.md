@@ -10,6 +10,8 @@ This project aims to build a tool that can be run locally, is open-source, and d
 - [x] very quick searching, scraping & answering due to parallelism 
 - [x] Configurable number of search results to parse
 - [x] local scraping of websites
+- [x] User account management with login and registration functionality
+- [x] Search history saving for logged-in users
 
 ---
 
@@ -27,8 +29,20 @@ This project aims to build a tool that can be run locally, is open-source, and d
 2. Get Bing API key
 3. Get OpenAI API key or [Ollama](https://ollama.com/)
 4. Fill/setup the environment variables (see `sample.env` file, copy it to `.fyin.env` and fill the values))
-5. `cargo run --query "<Question>" -n <number of search results>`
+5. Set up the database (see instructions below)
+6. `cargo run --query "<Question>" -n <number of search results>`
 
+### Setting up the Database
+
+1. Install PostgreSQL and create a new database.
+2. Set the `DATABASE_URL` environment variable to point to your database. For example:
+   ```
+   export DATABASE_URL=postgres://user:password@localhost/fyin
+   ```
+3. Run the database migrations:
+   ```
+   sqlx migrate run
+   ```
 
 ### Environment Variables
 ```
@@ -50,6 +64,9 @@ EMBEDDING_MODEL_NAME="text-embedding-ada-002"
 
 # CHAT_MODEL_NAME="llama3"
 CHAT_MODEL_NAME="gpt-4o"
+
+# Database URL
+DATABASE_URL="your-database-url"
 ```
 
 ### Docker
@@ -59,6 +76,26 @@ Here is how you can run the app using docker:
 3. Run the docker container 
 
 `docker run --rm --env-file .env fyin --query "<your question>" --search <optional: number of search results to parse>`
+
+## Using Accounts and Saving Searches
+
+### Registering a New Account
+To register a new account, use the `register` command:
+```
+cargo run -- register --username <your-username> --password <your-password>
+```
+
+### Logging In
+To log in to your account, use the `login` command:
+```
+cargo run -- login --username <your-username> --password <your-password>
+```
+
+### Saving Searches
+When you are logged in, your searches will be automatically saved to your account. You can view your search history using the `history` command:
+```
+cargo run -- history --username <your-username>
+```
 
 ## Notes
 - The app use Bing API for searching. You can get from [Active Bing API](https://www.microsoft.com/en-us/bing/apis/bing-web-search-api).

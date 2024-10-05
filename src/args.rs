@@ -11,4 +11,12 @@ pub struct Args {
     /// Number of search results to parse
     #[arg(short, long, default_value_t = 10)]
     pub search: usize,
+
+    /// Register a new user
+    #[arg(long)]
+    pub register: Option<String>,
+
+    /// Login as an existing user
+    #[arg(long)]
+    pub login: Option<String>,
 }

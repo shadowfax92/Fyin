@@ -24,7 +24,7 @@ This project aims to build a tool that can be run locally, is open-source, and d
 ## Installation
 
 1. Clone the repository - `git clone https://github.com/shadowfax92/fyin.app`
-2. Get Bing API key
+2. Get Bing API key or searxng URL or duckduckgo URL
 3. Get OpenAI API key or [Ollama](https://ollama.com/)
 4. Fill/setup the environment variables (see `sample.env` file, copy it to `.fyin.env` and fill the values))
 5. `cargo run --query "<Question>" -n <number of search results>`
@@ -50,6 +50,11 @@ EMBEDDING_MODEL_NAME="text-embedding-ada-002"
 
 # CHAT_MODEL_NAME="llama3"
 CHAT_MODEL_NAME="gpt-4o"
+
+# Search engine config
+SEARCH_ENGINE="bing" # Options: bing, searxng, duckduckgo
+SEARXNG_ENDPOINT="your-searxng-endpoint"
+DUCKDUCKGO_ENDPOINT="your-duckduckgo-endpoint"
 ```
 
 ### Docker
